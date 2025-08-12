@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import FacilityListing from "@/components/facility-listing"
+import MyBookings from "@/components/my-bookings"
 import Navbar from "@/components/navbar"
 
-export default async function Home() {
+export default async function BookingsPage() {
   const session = await getServerSession(authOptions)
   
   if (!session) {
@@ -17,14 +17,14 @@ export default async function Home() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Find the Perfect Space
+            My Bookings
           </h1>
           <p className="text-xl text-gray-600">
-            Book classrooms, labs, and meeting rooms for your needs
+            View and manage your facility reservations
           </p>
         </div>
         
-        <FacilityListing />
+        <MyBookings />
       </main>
     </div>
   )

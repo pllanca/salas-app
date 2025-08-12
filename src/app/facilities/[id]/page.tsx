@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import FacilityListing from "@/components/facility-listing"
+import FacilityDetail from "@/components/facility-detail"
 import Navbar from "@/components/navbar"
 
-export default async function Home() {
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function FacilityPage({ params }: PageProps) {
   const session = await getServerSession(authOptions)
+  const { id } = await params
   
   if (!session) {
     redirect("/auth/signin")
@@ -15,16 +20,7 @@ export default async function Home() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Find the Perfect Space
-          </h1>
-          <p className="text-xl text-gray-600">
-            Book classrooms, labs, and meeting rooms for your needs
-          </p>
-        </div>
-        
-        <FacilityListing />
+        <FacilityDetail facilityId={id} />
       </main>
     </div>
   )

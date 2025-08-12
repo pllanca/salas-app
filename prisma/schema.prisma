@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  FACULTY
+  STAFF
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum FacilityType {
+  CLASSROOM
+  AUDITORIUM
+  LAB
+  MEETING_ROOM
+  STUDY_ROOM
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(STUDENT)
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  bookings Booking[]
+  
+  @@map("users")
+}
+
+model Facility {
+  id          String       @id @default(cuid())
+  name        String
+  type        FacilityType
+  capacity    Int
+  description String?
+  location    String
+  building    String
+  floor       Int?
+  imageUrl    String?
+  equipment   String? // JSON string of equipment array
+  amenities   String? // JSON string of amenities array
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  bookings Booking[]
+  
+  @@map("facilities")
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  facilityId  String
+  startTime   DateTime
+  endTime     DateTime
+  purpose     String
+  attendees   Int           @default(1)
+  status      BookingStatus @default(PENDING)
+  notes       String?
+  rejectionReason String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  
+  @@map("bookings")
+}
