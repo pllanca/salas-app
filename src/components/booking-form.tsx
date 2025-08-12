@@ -119,7 +119,7 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
                 min={today}
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -181,7 +181,7 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
                 placeholder="e.g., Team meeting, Class lecture, Study session"
                 value={formData.purpose}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -197,7 +197,7 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
                 max={facility.capacity}
                 value={formData.attendees}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Maximum capacity: {facility.capacity} people
@@ -215,7 +215,7 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
                 placeholder="Any special requirements or notes..."
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
