@@ -24,3 +24,61 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom styles for react-datepicker */
+.react-datepicker {
+  @apply border border-gray-300 rounded-md shadow-lg bg-white;
+  font-family: inherit;
+}
+
+.react-datepicker__header {
+  @apply bg-blue-600 text-white rounded-t-md border-b-0;
+}
+
+.react-datepicker__current-month {
+  @apply text-white font-semibold;
+}
+
+.react-datepicker__day-name {
+  @apply text-white font-medium;
+}
+
+.react-datepicker__day {
+  @apply text-gray-700 hover:bg-blue-100 rounded;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.react-datepicker__day--today {
+  @apply bg-blue-100 text-blue-800 font-semibold;
+}
+
+.react-datepicker__day--disabled {
+  @apply text-gray-400 cursor-not-allowed hover:bg-transparent;
+}
+
+.react-datepicker__day--outside-month {
+  @apply text-gray-400;
+}
+
+.react-datepicker__navigation {
+  @apply top-3;
+}
+
+.react-datepicker__navigation--previous {
+  @apply left-3;
+}
+
+.react-datepicker__navigation--next {
+  @apply right-3;
+}
+
+.react-datepicker__navigation-icon::before {
+  @apply border-white;
+}
+
+.react-datepicker__triangle {
+  display: none;
+}

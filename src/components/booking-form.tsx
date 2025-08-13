@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { useSession } from "next-auth/react"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 
 interface Facility {
   id: string
@@ -18,7 +20,7 @@ interface BookingFormProps {
 export default function BookingForm({ facility, onClose, onSuccess }: BookingFormProps) {
   const { data: session } = useSession()
   const [formData, setFormData] = useState({
-    date: "",
+    date: null as Date | null,
     startTime: "",
     endTime: "",
     purpose: "",
@@ -35,8 +37,14 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
 
     try {
       // Combine date and time
-      const startDateTime = new Date(`${formData.date}T${formData.startTime}:00`)
-      const endDateTime = new Date(`${formData.date}T${formData.endTime}:00`)
+      if (!formData.date) {
+        setError("Please select a date")
+        return
+      }
+      
+      const dateStr = formData.date.toISOString().split('T')[0]
+      const startDateTime = new Date(`${dateStr}T${formData.startTime}:00`)
+      const endDateTime = new Date(`${dateStr}T${formData.endTime}:00`)
 
       const response = await fetch("/api/bookings", {
         method: "POST",
@@ -73,6 +81,13 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
     })
   }
 
+  const handleDateChange = (date: Date | null) => {
+    setFormData({
+      ...formData,
+      date: date
+    })
+  }
+
   // Generate time options (8 AM to 8 PM)
   const timeOptions = []
   for (let hour = 8; hour < 20; hour++) {
@@ -81,8 +96,6 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
     timeOptions.push({ value: time24, label: time12 })
   }
 
-  // Get today's date for min date
-  const today = new Date().toISOString().split('T')[0]
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -111,15 +124,17 @@ export default function BookingForm({ facility, onClose, onSuccess }: BookingFor
               <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
                 Date *
               </label>
-              <input
-                type="date"
+              <DatePicker
                 id="date"
-                name="date"
-                required
-                min={today}
-                value={formData.date}
-                onChange={handleChange}
+                selected={formData.date}
+                onChange={handleDateChange}
+                minDate={new Date()}
+                dateFormat="MM/dd/yyyy"
+                placeholderText="Select a date"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                calendarClassName="!font-sans"
+                showPopperArrow={false}
+                required
               />
             </div>
 
