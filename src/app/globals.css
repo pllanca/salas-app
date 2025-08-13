@@ -82,3 +82,81 @@ body {
 .react-datepicker__triangle {
   display: none;
 }
+
+/* Custom styles for react-big-calendar */
+.rbc-calendar-custom {
+  @apply bg-white rounded-lg border border-gray-200;
+  font-family: inherit;
+}
+
+.rbc-header {
+  @apply bg-gray-50 text-gray-700 font-medium border-b border-gray-200 py-2;
+}
+
+.rbc-month-view {
+  @apply border border-gray-200 rounded-md;
+}
+
+.rbc-date-cell {
+  @apply text-gray-700;
+}
+
+.rbc-date-cell.rbc-off-range {
+  @apply text-gray-400;
+}
+
+.rbc-today {
+  @apply bg-blue-50;
+}
+
+.rbc-event {
+  @apply text-xs;
+}
+
+.rbc-toolbar {
+  @apply mb-4 flex justify-between items-center;
+}
+
+.rbc-toolbar-label {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.rbc-btn-group button {
+  @apply px-3 py-1 text-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+}
+
+.rbc-btn-group button:first-child {
+  @apply rounded-l-md border-r-0;
+}
+
+.rbc-btn-group button:last-child {
+  @apply rounded-r-md;
+}
+
+.rbc-btn-group button:not(:first-child):not(:last-child) {
+  @apply border-r-0;
+}
+
+.rbc-btn-group button.rbc-active {
+  @apply bg-blue-600 text-white border-blue-600;
+}
+
+.rbc-time-view .rbc-time-gutter {
+  @apply text-sm text-gray-600;
+}
+
+.rbc-time-content {
+  @apply border-l border-gray-200;
+}
+
+.rbc-current-time-indicator {
+  @apply bg-red-500;
+}
+
+.fully-booked-day {
+  @apply bg-gray-100;
+}
+
+.rbc-slot-selection {
+  @apply bg-blue-100 border-blue-300;
+}

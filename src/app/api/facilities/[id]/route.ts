@@ -20,6 +20,9 @@ export async function GET(
               gte: new Date()
             }
           },
+          include: {
+            user: true
+          },
           orderBy: {
             startTime: 'asc'
           }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
+import FacilityManagement from "./facility-management"
 
 interface Booking {
   id: string
@@ -28,6 +29,7 @@ interface Booking {
 
 export default function AdminPanel() {
   const { data: session } = useSession()
+  const [activeTab, setActiveTab] = useState<'bookings' | 'facilities'>('bookings')
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>("all")
@@ -116,20 +118,18 @@ export default function AdminPanel() {
 
   return (
     <div>
-      {/* Filter Tabs */}
-      <div className="mb-6">
+      {/* Main Tab Navigation */}
+      <div className="mb-8">
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
           {[
-            { key: "all", label: "All" },
-            { key: "pending", label: "Pending" },
-            { key: "approved", label: "Approved" },
-            { key: "rejected", label: "Rejected" }
+            { key: "bookings", label: "Bookings" },
+            { key: "facilities", label: "Facilities" }
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setFilter(key)}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                filter === key
+              onClick={() => setActiveTab(key as 'bookings' | 'facilities')}
+              className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${
+                activeTab === key
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
@@ -139,6 +139,33 @@ export default function AdminPanel() {
           ))}
         </div>
       </div>
+
+      {/* Bookings Tab Content */}
+      {activeTab === 'bookings' && (
+        <div>
+          {/* Filter Tabs */}
+          <div className="mb-6">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+              {[
+                { key: "all", label: "All" },
+                { key: "pending", label: "Pending" },
+                { key: "approved", label: "Approved" },
+                { key: "rejected", label: "Rejected" }
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    filter === key
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
 
       {/* Bookings List */}
       <div className="space-y-4">
@@ -248,6 +275,13 @@ export default function AdminPanel() {
           })
         )}
       </div>
+        </div>
+      )}
+
+      {/* Facilities Tab Content */}
+      {activeTab === 'facilities' && (
+        <FacilityManagement />
+      )}
     </div>
   )
 }

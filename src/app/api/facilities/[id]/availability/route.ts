@@ -35,6 +35,9 @@ export async function GET(
           lte: endOfDay
         }
       },
+      include: {
+        user: true
+      },
       orderBy: {
         startTime: 'asc'
       }

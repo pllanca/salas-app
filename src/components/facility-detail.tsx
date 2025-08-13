@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 import BookingForm from "./booking-form"
+import BookingCalendar from "./booking-calendar"
+import DayDetailModal from "./day-detail-modal"
 
 interface Facility {
   id: string
@@ -35,6 +37,8 @@ export default function FacilityDetail({ facilityId }: FacilityDetailProps) {
   const [facility, setFacility] = useState<Facility | null>(null)
   const [loading, setLoading] = useState(true)
   const [showBookingForm, setShowBookingForm] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [showDayDetail, setShowDayDetail] = useState(false)
 
   useEffect(() => {
     fetchFacility()
@@ -74,6 +78,18 @@ export default function FacilityDetail({ facilityId }: FacilityDetailProps) {
   const formatDateTime = (dateTime: string) => {
     const date = new Date(dateTime)
     return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date)
+    setShowDayDetail(true)
+  }
+
+  const handleBookSlot = (startTime: string) => {
+    // Close day detail modal and open booking form with pre-selected time
+    setShowDayDetail(false)
+    setShowBookingForm(true)
+    // Note: We would need to modify BookingForm to accept pre-selected date/time
   }
 
   if (loading) {
@@ -226,23 +242,12 @@ export default function FacilityDetail({ facilityId }: FacilityDetailProps) {
             </div>
           )}
 
-          {/* Upcoming Bookings */}
-          {facility.bookings.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Bookings</h3>
-              <div className="space-y-2">
-                {facility.bookings.slice(0, 5).map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div>
-                      <span className="font-medium text-gray-900">
-                        {formatDateTime(booking.startTime)} - {new Date(booking.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Booking Calendar */}
+          <BookingCalendar
+            facilityId={facility.id}
+            bookings={facility.bookings}
+            onDateClick={handleDateClick}
+          />
         </div>
       </div>
 
@@ -255,6 +260,16 @@ export default function FacilityDetail({ facilityId }: FacilityDetailProps) {
             setShowBookingForm(false)
             fetchFacility() // Refresh facility data
           }}
+        />
+      )}
+
+      {/* Day Detail Modal */}
+      {showDayDetail && selectedDate && (
+        <DayDetailModal
+          facilityId={facility.id}
+          date={selectedDate}
+          onClose={() => setShowDayDetail(false)}
+          onBookSlot={handleBookSlot}
         />
       )}
     </div>
