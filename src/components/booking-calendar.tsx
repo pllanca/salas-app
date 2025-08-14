@@ -12,8 +12,8 @@ interface Booking {
   id: string
   startTime: string
   endTime: string
-  purpose: string
-  attendees: number
+  purpose?: string
+  attendees?: number
   user?: {
     name: string
   }

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
+import { safeJsonParse } from "@/lib/utils"
 
 export async function GET(
   request: NextRequest,
@@ -40,8 +39,8 @@ export async function GET(
     // Parse JSON strings for equipment and amenities
     const facilityWithParsedData = {
       ...facility,
-      equipment: facility.equipment ? JSON.parse(facility.equipment) : [],
-      amenities: facility.amenities ? JSON.parse(facility.amenities) : []
+      equipment: safeJsonParse<string[]>(facility.equipment, []),
+      amenities: safeJsonParse<string[]>(facility.amenities, [])
     }
 
     return NextResponse.json(facilityWithParsedData)

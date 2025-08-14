@@ -132,7 +132,7 @@ export default function MyBookings() {
               </svg>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-            <p className="text-gray-500 mb-4">You haven't made any bookings yet.</p>
+            <p className="text-gray-500 mb-4">You haven&apos;t made any bookings yet.</p>
             <Link
               href="/"
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"

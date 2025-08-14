@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { PrismaClient } from "@prisma/client"
-import { authOptions } from "../../../auth/[...nextauth]/route"
-
-const prisma = new PrismaClient()
+import { authOptions } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { safeJsonParse, facilityUpdateSchema } from "@/lib/utils"
 
 export async function PUT(
   request: NextRequest,
@@ -21,19 +20,17 @@ export async function PUT(
 
     const { id } = await params
     const body = await request.json()
-    const {
-      name,
-      type,
-      capacity,
-      description,
-      location,
-      building,
-      floor,
-      imageUrl,
-      equipment,
-      amenities,
-      isActive
-    } = body
+    
+    // Validate input with Zod schema
+    const validationResult = facilityUpdateSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: validationResult.error.issues },
+        { status: 400 }
+      )
+    }
+    
+    const updateData = validationResult.data
 
     // Check if facility exists
     const existingFacility = await prisma.facility.findUnique({
@@ -47,51 +44,35 @@ export async function PUT(
       )
     }
 
-    // Validation (only if fields are provided)
-    if (type) {
-      const validTypes = ['CLASSROOM', 'AUDITORIUM', 'LAB', 'MEETING_ROOM', 'STUDY_ROOM']
-      if (!validTypes.includes(type)) {
-        return NextResponse.json(
-          { error: "Invalid facility type" },
-          { status: 400 }
-        )
-      }
-    }
-
-    if (capacity !== undefined && (typeof capacity !== 'number' || capacity <= 0)) {
-      return NextResponse.json(
-        { error: "Capacity must be a positive number" },
-        { status: 400 }
-      )
-    }
+    // Input validation is handled by Zod schema above
 
     // Update facility
     const updatedFacility = await prisma.facility.update({
       where: { id },
       data: {
-        ...(name && { name }),
-        ...(type && { type }),
-        ...(capacity !== undefined && { capacity: parseInt(capacity.toString()) }),
-        ...(description !== undefined && { description: description || null }),
-        ...(location && { location }),
-        ...(building && { building }),
-        ...(floor !== undefined && { floor: floor ? parseInt(floor.toString()) : null }),
-        ...(imageUrl !== undefined && { imageUrl: imageUrl || null }),
-        ...(equipment !== undefined && { 
-          equipment: equipment && equipment.length > 0 ? JSON.stringify(equipment) : null 
+        ...(updateData.name && { name: updateData.name }),
+        ...(updateData.type && { type: updateData.type }),
+        ...(updateData.description !== undefined && { description: updateData.description }),
+        ...(updateData.capacity !== undefined && { capacity: updateData.capacity }),
+        ...(updateData.location && { location: updateData.location }),
+        ...(updateData.building && { building: updateData.building }),
+        ...(updateData.floor !== undefined && { floor: updateData.floor }),
+        ...(updateData.equipment !== undefined && { 
+          equipment: Array.isArray(updateData.equipment) && updateData.equipment.length > 0 ? JSON.stringify(updateData.equipment) : null 
         }),
-        ...(amenities !== undefined && { 
-          amenities: amenities && amenities.length > 0 ? JSON.stringify(amenities) : null 
+        ...(updateData.amenities !== undefined && { 
+          amenities: Array.isArray(updateData.amenities) && updateData.amenities.length > 0 ? JSON.stringify(updateData.amenities) : null 
         }),
-        ...(isActive !== undefined && { isActive: Boolean(isActive) })
+        ...(updateData.image_url !== undefined && { imageUrl: updateData.image_url }),
+        ...(updateData.status !== undefined && { isActive: updateData.status !== 'INACTIVE' })
       }
     })
 
     // Return facility with parsed data
     const facilityWithParsedData = {
       ...updatedFacility,
-      equipment: updatedFacility.equipment ? JSON.parse(updatedFacility.equipment) : [],
-      amenities: updatedFacility.amenities ? JSON.parse(updatedFacility.amenities) : []
+      equipment: safeJsonParse<string[]>(updatedFacility.equipment, []),
+      amenities: safeJsonParse<string[]>(updatedFacility.amenities, [])
     }
 
     return NextResponse.json(facilityWithParsedData)

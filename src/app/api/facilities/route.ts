@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
+import { safeJsonParse } from "@/lib/utils"
+import { FacilityType } from "@prisma/client"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,12 +10,17 @@ export async function GET(request: NextRequest) {
     const capacity = searchParams.get("capacity")
     const building = searchParams.get("building")
 
-    const where: any = {
+    const where: {
+      isActive: boolean;
+      type?: FacilityType;
+      capacity?: { gte: number };
+      building?: { contains: string; mode: 'insensitive' };
+    } = {
       isActive: true
     }
 
     if (type) {
-      where.type = type
+      where.type = type as FacilityType
     }
 
     if (capacity) {
@@ -41,8 +46,8 @@ export async function GET(request: NextRequest) {
     // Parse JSON strings for equipment and amenities
     const facilitiesWithParsedData = facilities.map(facility => ({
       ...facility,
-      equipment: facility.equipment ? JSON.parse(facility.equipment) : [],
-      amenities: facility.amenities ? JSON.parse(facility.amenities) : []
+      equipment: safeJsonParse<string[]>(facility.equipment, []),
+      amenities: safeJsonParse<string[]>(facility.amenities, [])
     }))
 
     return NextResponse.json(facilitiesWithParsedData)

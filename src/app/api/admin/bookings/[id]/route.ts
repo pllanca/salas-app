@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
+import { BookingStatus } from "@prisma/client"
 
 export async function PATCH(
   request: NextRequest,
@@ -28,7 +27,7 @@ export async function PATCH(
       )
     }
 
-    const updateData: any = { status }
+    const updateData: { status: BookingStatus; rejectionReason?: string } = { status: status as BookingStatus }
     if (status === 'REJECTED' && rejectionReason) {
       updateData.rejectionReason = rejectionReason
     }
