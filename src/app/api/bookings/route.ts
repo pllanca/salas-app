@@ -73,6 +73,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verify user and facility exist
+    const userExists = await prisma.user.findUnique({
+      where: { id: session.user.id }
+    })
+    
+    if (!userExists) {
+      console.error("User not found in database:", session.user.id)
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 400 }
+      )
+    }
+
+    const facilityExists = await prisma.facility.findUnique({
+      where: { id: facilityId }
+    })
+
+    if (!facilityExists) {
+      console.error("Facility not found in database:", facilityId)
+      return NextResponse.json(
+        { error: "Facility not found" },
+        { status: 400 }
+      )
+    }
+
     // Determine booking status based on user role
     const status = session.user.role === 'FACULTY' || session.user.role === 'STAFF' ? 'APPROVED' : 'PENDING'
 

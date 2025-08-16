@@ -13,6 +13,7 @@ interface Booking {
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
   notes: string | null
   rejectionReason: string | null
+  cancellationReason: string | null
   createdAt: string
   user: {
     name: string
@@ -34,6 +35,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>("all")
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; bookingId: string | null }>({ isOpen: false, bookingId: null })
+  const [cancelReason, setCancelReason] = useState("")
 
   useEffect(() => {
     if (session?.user.role === 'ADMIN') {
@@ -55,7 +58,7 @@ export default function AdminPanel() {
     }
   }
 
-  const handleBookingAction = async (bookingId: string, status: 'APPROVED' | 'REJECTED', rejectionReason?: string) => {
+  const handleBookingAction = async (bookingId: string, status: 'APPROVED' | 'REJECTED' | 'CANCELLED', rejectionReason?: string, cancellationReason?: string) => {
     setActionLoading(bookingId)
     try {
       const response = await fetch(`/api/admin/bookings/${bookingId}`, {
@@ -65,7 +68,8 @@ export default function AdminPanel() {
         },
         body: JSON.stringify({
           status,
-          rejectionReason
+          rejectionReason,
+          cancellationReason
         })
       })
 
@@ -77,6 +81,22 @@ export default function AdminPanel() {
     } finally {
       setActionLoading(null)
     }
+  }
+
+  const handleCancelConfirm = async () => {
+    if (!cancelModal.bookingId || !cancelReason.trim()) {
+      alert("Please provide a cancellation reason.")
+      return
+    }
+    
+    await handleBookingAction(cancelModal.bookingId, 'CANCELLED', undefined, cancelReason)
+    setCancelModal({ isOpen: false, bookingId: null })
+    setCancelReason("")
+  }
+
+  const openCancelModal = (bookingId: string) => {
+    setCancelModal({ isOpen: true, bookingId })
+    setCancelReason("")
   }
 
   const getStatusColor = (status: string) => {
@@ -150,7 +170,8 @@ export default function AdminPanel() {
                 { key: "all", label: "All" },
                 { key: "pending", label: "Pending" },
                 { key: "approved", label: "Approved" },
-                { key: "rejected", label: "Rejected" }
+                { key: "rejected", label: "Rejected" },
+                { key: "cancelled", label: "Cancelled" }
               ].map(({ key, label }) => (
                 <button
                   key={key}
@@ -222,6 +243,18 @@ export default function AdminPanel() {
                       </button>
                     </div>
                   )}
+                  
+                  {booking.status === 'APPROVED' && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => openCancelModal(booking.id)}
+                        disabled={actionLoading === booking.id}
+                        className="bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors"
+                      >
+                        {actionLoading === booking.id ? "..." : "Cancel Booking"}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -267,6 +300,14 @@ export default function AdminPanel() {
                   </div>
                 )}
 
+                {booking.status === 'CANCELLED' && booking.cancellationReason && (
+                  <div className="bg-orange-50 border border-orange-200 p-3 rounded-md mb-4">
+                    <p className="text-sm text-orange-800">
+                      <strong>Cancellation Reason:</strong> {booking.cancellationReason}
+                    </p>
+                  </div>
+                )}
+
                 <div className="text-xs text-gray-500">
                   Requested on {formatDateTime(booking.createdAt).date} at {formatDateTime(booking.createdAt).time}
                 </div>
@@ -281,6 +322,44 @@ export default function AdminPanel() {
       {/* Facilities Tab Content */}
       {activeTab === 'facilities' && (
         <FacilityManagement />
+      )}
+
+      {/* Cancellation Modal */}
+      {cancelModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Cancel Booking</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Please provide a reason for cancelling this booking. This action cannot be undone.
+            </p>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Enter cancellation reason..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              rows={4}
+              required
+            />
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setCancelModal({ isOpen: false, bookingId: null })
+                  setCancelReason("")
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCancelConfirm}
+                disabled={!cancelReason.trim() || actionLoading === cancelModal.bookingId}
+                className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-orange-400 disabled:cursor-not-allowed"
+              >
+                {actionLoading === cancelModal.bookingId ? "Cancelling..." : "Confirm Cancellation"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

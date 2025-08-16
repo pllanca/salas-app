@@ -18,18 +18,21 @@ export async function PATCH(
     }
 
     const { id } = await params
-    const { status, rejectionReason } = await request.json()
+    const { status, rejectionReason, cancellationReason } = await request.json()
 
-    if (!status || !['APPROVED', 'REJECTED'].includes(status)) {
+    if (!status || !['APPROVED', 'REJECTED', 'CANCELLED'].includes(status)) {
       return NextResponse.json(
         { error: "Invalid status" },
         { status: 400 }
       )
     }
 
-    const updateData: { status: BookingStatus; rejectionReason?: string } = { status: status as BookingStatus }
+    const updateData: { status: BookingStatus; rejectionReason?: string; cancellationReason?: string } = { status: status as BookingStatus }
     if (status === 'REJECTED' && rejectionReason) {
       updateData.rejectionReason = rejectionReason
+    }
+    if (status === 'CANCELLED' && cancellationReason) {
+      updateData.cancellationReason = cancellationReason
     }
 
     const booking = await prisma.booking.update({

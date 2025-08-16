@@ -234,7 +234,7 @@ export default function FacilityFormModal({
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Main Auditorium"
                 />
               </div>
@@ -249,7 +249,7 @@ export default function FacilityFormModal({
                   required
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {facilityTypes.map(type => (
                     <option key={type.value} value={type.value}>
@@ -271,7 +271,7 @@ export default function FacilityFormModal({
                   min="1"
                   value={formData.capacity}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -285,7 +285,7 @@ export default function FacilityFormModal({
                   name="floor"
                   value={formData.floor}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., 2"
                 />
               </div>
@@ -301,7 +301,7 @@ export default function FacilityFormModal({
                   required
                   value={formData.location}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Room 201"
                 />
               </div>
@@ -317,7 +317,7 @@ export default function FacilityFormModal({
                   required
                   value={formData.building}
                   onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Science Building"
                 />
               </div>
@@ -367,7 +367,7 @@ export default function FacilityFormModal({
                     value={equipmentInput}
                     onChange={(e) => setEquipmentInput(e.target.value)}
                     onKeyPress={handleEquipmentKeyPress}
-                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., Projector, Whiteboard..."
                   />
                   <button
@@ -412,7 +412,7 @@ export default function FacilityFormModal({
                     value={amenityInput}
                     onChange={(e) => setAmenityInput(e.target.value)}
                     onKeyPress={handleAmenityKeyPress}
-                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., WiFi, Air Conditioning..."
                   />
                   <button
